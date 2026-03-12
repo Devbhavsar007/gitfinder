@@ -12,7 +12,7 @@
 
 <br/>
 
-> Type a concept like `"image compression"` or `"expense tracker"` — GitFinder ranks the best repos with quality scoring, date filters, README previews, and live trending data.
+> GitFinder — search, score and explore GitHub's 300M+ repositories by quality, language and activity. Type a concept like `"image compression"` or `"expense tracker"` to get ranked results.
 
 <br/>
 
