@@ -16,9 +16,9 @@
 
 <br/>
 
-![GitFinder Preview](https://gitfinder-five-sandy.vercel.app/og-preview.png)
+![GitFinder Preview](./public/preview.png)
 
-**[🌐 Open App](https://gitfinder-five-sandy.vercel.app/)** · **[📦 Report Bug](https://github.com/YOUR_USERNAME/gitfinder/issues)** · **[✨ Request Feature](https://github.com/YOUR_USERNAME/gitfinder/issues)**
+**[🌐 Open App](https://gitfinder-five-sandy.vercel.app/)** · **[📦 Report Bug](https://github.com/Devbhavsar007/gitfinder/issues)** · **[✨ Request Feature](https://github.com/Devbhavsar007/gitfinder/issues)**
 
 </div>
 
@@ -91,7 +91,7 @@ User Input → /api/github (Next.js Route Handler) → api.github.com → Ranked
 ### 1. Clone the repo
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/gitfinder.git
+git clone https://github.com/Devbhavsar007/gitfinder.git
 cd gitfinder
 ```
 
