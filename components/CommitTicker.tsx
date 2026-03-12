@@ -95,7 +95,7 @@ export default function CommitTicker() {
         .ct-msg { color: #5a6480; }
         .ct-sep { color: #1e2333; font-size: 10px; }
       `}</style>
-      <div ref={trackRef} style={{ display: "flex", alignItems: "center", willChange: "transform" }} />
+      <div ref={trackRef} suppressHydrationWarning style={{ display: "flex", alignItems: "center", willChange: "transform" }} />
     </div>
   );
 }

@@ -61,3 +61,54 @@ body {
 .md-render a:hover { text-decoration: underline; }
 .md-render ul { padding-left: 20px; margin: 8px 0; }
 .md-render li { margin: 4px 0; }
+
+/* Custom Native Select / Dropdown styling */
+select {
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238892a4' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 10px center !important;
+  background-size: 14px !important;
+  padding-right: 30px !important;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+select:hover {
+  border-color: #38bdf888 !important;
+  color: var(--tx) !important;
+}
+
+select:focus {
+  border-color: #38bdf8 !important;
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15) !important;
+  outline: none;
+}
+
+select option {
+  background-color: var(--s2);
+  color: var(--tx);
+  font-weight: 500;
+  padding: 8px;
+}
+
+/* Custom Dropdown Dialog Animations */
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-6px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.dropdown-menu {
+  animation: slideDown 0.15s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  transform-origin: top center;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  background: rgba(22, 26, 36, 0.85) !important; /* var(--s2) with opacity */
+  border: 1px solid rgba(56, 189, 248, 0.3) !important;
+}
+
+.dropdown-menu button:hover {
+  background: rgba(56, 189, 248, 0.15) !important;
+  color: #38bdf8 !important;
+}

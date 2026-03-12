@@ -44,7 +44,9 @@ export default function Home() {
   const [qualityFilter, setQualityFilter] = useState("all");
   const [langFilter, setLangFilter] = useState("Any");
   const [showDateDrop, setShowDateDrop] = useState(false);
+  const [showLangDrop, setShowLangDrop] = useState(false);
   const dateRef = useRef<HTMLDivElement>(null);
+  const langRef = useRef<HTMLDivElement>(null);
 
   // Trending state
   const [trendCat, setTrendCat] = useState(TRENDING_CATEGORIES[0]);
@@ -58,6 +60,7 @@ export default function Home() {
   useEffect(() => {
     const h = (e: MouseEvent) => {
       if (dateRef.current && !dateRef.current.contains(e.target as Node)) setShowDateDrop(false);
+      if (langRef.current && !langRef.current.contains(e.target as Node)) setShowLangDrop(false);
     };
     document.addEventListener("mousedown", h);
     return () => document.removeEventListener("mousedown", h);
@@ -110,7 +113,7 @@ export default function Home() {
         </span>
         <div className="flex gap-1 ml-auto p-1 rounded-xl" style={{ background: "var(--s2)", border: "1px solid var(--bd)" }}>
           {(["search", "trending"] as Tab[]).map(t => (
-            <button key={t} onClick={() => switchTab(t)}
+            <button key={t} onClick={() => switchTab(t)} suppressHydrationWarning
               className="px-4 py-2 rounded-lg text-sm font-semibold capitalize transition-all"
               style={tab === t ? { background: "#38bdf8", color: "#000" } : { color: "var(--mt2)" }}>
               {t === "search" ? "🔍 Search" : "📈 Trending"}
@@ -141,7 +144,7 @@ export default function Home() {
               <span className="absolute left-4 pointer-events-none" style={{ color: "var(--mt)" }}>
                 <SearchIcon />
               </span>
-              <input
+              <input suppressHydrationWarning
                 className="w-full py-3.5 pr-10 text-sm rounded-xl outline-none transition-all"
                 style={{
                   paddingLeft: 44, background: "var(--s2)", border: "1.5px solid var(--bd)",
@@ -155,11 +158,11 @@ export default function Home() {
                 onKeyDown={e => e.key === "Enter" && doSearch(1)}
               />
               {query && (
-                <button className="absolute right-3 text-xs" style={{ color: "var(--mt)" }}
+                <button suppressHydrationWarning className="absolute right-3 text-xs" style={{ color: "var(--mt)" }}
                   onClick={() => { setQuery(""); setResults([]); setFiltered([]); setTotal(0); }}>✕</button>
               )}
             </div>
-            <button onClick={() => doSearch(1)} disabled={loading || !query.trim()}
+            <button suppressHydrationWarning onClick={() => doSearch(1)} disabled={loading || !query.trim()}
               className="px-6 py-3.5 rounded-xl text-sm font-bold flex items-center gap-2 transition-opacity"
               style={{ background: "#38bdf8", color: "#000", opacity: (loading || !query.trim()) ? 0.4 : 1 }}>
               {loading ? <><div className="spin w-4 h-4" /> Searching</> : "Search →"}
@@ -170,16 +173,16 @@ export default function Home() {
           <div data-no-trail="" className="flex items-center gap-2 flex-wrap justify-center mb-8" style={{ maxWidth: 780, margin: "0 auto 32px" }}>
             {/* Date */}
             <div className="relative" ref={dateRef}>
-              <button onClick={() => setShowDateDrop(v => !v)}
+              <button suppressHydrationWarning onClick={() => setShowDateDrop(v => !v)}
                 className="flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-semibold transition-all"
                 style={{ border: `1.5px solid ${dateFilter.value ? "#38bdf855" : "var(--bd)"}`, background: "var(--s2)", color: dateFilter.value ? "#38bdf8" : "var(--mt2)" }}>
                 📅 {dateFilter.label} ▾
               </button>
               {showDateDrop && (
-                <div className="absolute top-full mt-2 left-0 z-20 rounded-xl p-1.5 flex flex-col gap-0.5 min-w-40"
-                  style={{ background: "var(--s2)", border: "1px solid var(--bd)", boxShadow: "0 20px 40px #00000077" }}>
+                <div className="dropdown-menu absolute top-full mt-2 left-0 z-20 rounded-xl p-1.5 flex flex-col gap-0.5 min-w-40"
+                  style={{ boxShadow: "0 20px 40px #00000077" }}>
                   {DATE_FILTERS.map(f => (
-                    <button key={f.label} onClick={() => { setDateFilter(f); setShowDateDrop(false); }}
+                    <button suppressHydrationWarning key={f.label} onClick={() => { setDateFilter(f); setShowDateDrop(false); }}
                       className="px-3 py-2 rounded-lg text-xs text-left transition-all"
                       style={{ color: dateFilter.label === f.label ? "#38bdf8" : "var(--mt2)", background: dateFilter.label === f.label ? "var(--s3)" : "none", fontWeight: dateFilter.label === f.label ? 700 : 400 }}>
                       {f.label}
@@ -191,7 +194,7 @@ export default function Home() {
 
             {/* Quality */}
             {QUALITY_LEVELS.map(ql => (
-              <button key={ql.value} onClick={() => setQualityFilter(ql.value)} title={ql.desc}
+              <button suppressHydrationWarning key={ql.value} onClick={() => setQualityFilter(ql.value)} title={ql.desc}
                 className="px-3.5 py-2 rounded-full text-xs font-semibold transition-all"
                 style={qualityFilter === ql.value
                   ? { borderColor: ql.color, color: ql.color, background: ql.color + "15", border: "1.5px solid" }
@@ -201,11 +204,25 @@ export default function Home() {
             ))}
 
             {/* Language */}
-            <select value={langFilter} onChange={e => setLangFilter(e.target.value)}
-              className="px-3.5 py-2 rounded-full text-xs font-semibold outline-none"
-              style={{ border: "1.5px solid var(--bd)", background: "var(--s2)", color: "var(--mt2)" }}>
-              {LANGS.map(l => <option key={l}>{l}</option>)}
-            </select>
+            <div className="relative" ref={langRef}>
+              <button suppressHydrationWarning onClick={() => setShowLangDrop(v => !v)}
+                className="flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-semibold transition-all"
+                style={{ border: `1.5px solid ${langFilter !== "Any" ? "#38bdf855" : "var(--bd)"}`, background: "var(--s2)", color: langFilter !== "Any" ? "#38bdf8" : "var(--mt2)" }}>
+                {langFilter} ▾
+              </button>
+              {showLangDrop && (
+                <div className="dropdown-menu absolute top-full mt-2 right-0 z-20 rounded-xl p-1.5 flex flex-col gap-0.5 min-w-40 max-h-64 overflow-y-auto"
+                  style={{ boxShadow: "0 20px 40px #00000077" }}>
+                  {LANGS.map(l => (
+                    <button suppressHydrationWarning key={l} onClick={() => { setLangFilter(l); setShowLangDrop(false); }}
+                      className="px-3 py-2 rounded-lg text-xs text-left transition-all"
+                      style={{ color: langFilter === l ? "#38bdf8" : "var(--mt2)", background: langFilter === l ? "var(--s3)" : "none", fontWeight: langFilter === l ? 700 : 400 }}>
+                      {l}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Error */}
@@ -251,7 +268,7 @@ export default function Home() {
 
               {/* Pagination */}
               <div data-no-trail="" className="flex items-center gap-2 justify-center mt-8 flex-wrap">
-                <button onClick={() => doSearch(page - 1)} disabled={page === 1}
+                <button suppressHydrationWarning onClick={() => doSearch(page - 1)} disabled={page === 1}
                   className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold transition-all"
                   style={{ background: "var(--s2)", border: "1px solid var(--bd)", color: page === 1 ? "var(--mt)" : "var(--mt2)", opacity: page === 1 ? 0.35 : 1 }}>
                   ← Prev
@@ -263,7 +280,7 @@ export default function Home() {
                     const p = nums[i];
                     if (!p) return null;
                     return (
-                      <button key={p} onClick={() => doSearch(p)}
+                      <button suppressHydrationWarning key={p} onClick={() => doSearch(p)}
                         className="w-9 h-9 rounded-xl text-sm mono transition-all"
                         style={p === page
                           ? { background: "#38bdf8", color: "#000", fontWeight: 700, border: "1px solid #38bdf8" }
@@ -273,7 +290,7 @@ export default function Home() {
                     );
                   })}
                 </div>
-                <button onClick={() => doSearch(page + 1)} disabled={page >= totalPages}
+                <button suppressHydrationWarning onClick={() => doSearch(page + 1)} disabled={page >= totalPages}
                   className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold transition-all"
                   style={{ background: "var(--s2)", border: "1px solid var(--bd)", color: page >= totalPages ? "var(--mt)" : "var(--mt2)", opacity: page >= totalPages ? 0.35 : 1 }}>
                   Next →
@@ -290,7 +307,7 @@ export default function Home() {
               <p className="text-sm mb-6" style={{ color: "var(--mt2)" }}>Type any concept — we do the heavy lifting</p>
               <div className="flex flex-wrap gap-2 justify-center">
                 {EXAMPLES.map(ex => (
-                  <button key={ex} onClick={() => { setQuery(ex); setTimeout(() => doSearch(1), 50); }}
+                  <button suppressHydrationWarning key={ex} onClick={() => { setQuery(ex); setTimeout(() => doSearch(1), 50); }}
                     className="px-4 py-2 rounded-full text-sm transition-all"
                     style={{ border: "1px solid var(--bd)", background: "var(--s2)", color: "var(--mt2)" }}
                     onMouseEnter={e => { e.currentTarget.style.color = "#38bdf8"; e.currentTarget.style.borderColor = "#38bdf844"; }}
@@ -323,7 +340,7 @@ export default function Home() {
           {/* Category pills */}
           <div data-no-trail="" className="flex flex-wrap gap-2 justify-center mb-8">
             {TRENDING_CATEGORIES.map(cat => (
-              <button key={cat.label} onClick={() => loadTrending(cat)}
+              <button suppressHydrationWarning key={cat.label} onClick={() => loadTrending(cat)}
                 className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold transition-all"
                 style={trendCat.label === cat.label
                   ? { background: "#38bdf8", color: "#000", border: "1.5px solid #38bdf8" }
