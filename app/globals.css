@@ -1,0 +1,63 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #07080c;
+  --s1: #0f1117;
+  --s2: #161a24;
+  --s3: #1e2333;
+  --bd: #252b3b;
+  --tx: #e2e8f5;
+  --mt: #5a6480;
+  --mt2: #8892a4;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--tx);
+  font-family: 'Bricolage Grotesque', sans-serif;
+  min-height: 100vh;
+  padding-bottom: 32px;
+}
+
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--bd); border-radius: 3px; }
+
+.mono { font-family: 'DM Mono', monospace; }
+
+/* Spinner */
+.spin {
+  border: 2.5px solid var(--bd);
+  border-top-color: #38bdf8;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Card fade-up animation */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.fade-up { animation: fadeUp 0.4s both; }
+
+/* Markdown render */
+.md-render { font-size: 14px; line-height: 1.8; color: var(--mt2); }
+.md-render h1, .md-render h2, .md-render h3 { color: var(--tx); font-weight: 700; margin: 18px 0 8px; }
+.md-render h1 { font-size: 20px; }
+.md-render h2 { font-size: 17px; }
+.md-render h3 { font-size: 15px; }
+.md-render strong { color: var(--tx); }
+.md-render code { background: var(--s3); border: 1px solid var(--bd); border-radius: 4px; padding: 1px 6px; font-family: 'DM Mono', monospace; font-size: 12px; color: #38bdf8; }
+.md-render pre { background: var(--bg); border: 1px solid var(--bd); border-radius: 8px; padding: 14px; margin: 10px 0; overflow-x: auto; }
+.md-render pre code { background: none; border: none; padding: 0; color: var(--mt2); }
+.md-render a { color: #38bdf8; }
+.md-render a:hover { text-decoration: underline; }
+.md-render ul { padding-left: 20px; margin: 8px 0; }
+.md-render li { margin: 4px 0; }
