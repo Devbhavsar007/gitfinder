@@ -7,7 +7,7 @@ async function ghFetch(url: string) {
   const token = process.env.GITHUB_TOKEN;
   const headers: Record<string, string> = {
     Accept: "application/vnd.github.mercy-preview+json",
-    "User-Agent": "GitFinder/1.0",
+    "User-Agent": "GitFinder/2.0",
   };
   if (token) headers["Authorization"] = `Bearer ${token}`;
   return fetch(url, { headers, next: { revalidate: 60 } });
@@ -49,20 +49,63 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ content });
     }
 
-    // ── TRENDING ──
+    // ── TRENDING (Enhanced) ──
     if (action === "trending") {
       const category = searchParams.get("category") || "";
+      const daysAgo = parseInt(searchParams.get("days") || "7");
+      const sort = searchParams.get("sort") || "stars";
+      const lang = searchParams.get("lang") || "";
+      const perPage = Math.min(parseInt(searchParams.get("per_page") || "30"), 100);
+      const page = searchParams.get("page") || "1";
+
+      const date = new Date();
+      date.setDate(date.getDate() - daysAgo);
+      const dateStr = date.toISOString().split("T")[0];
+
+      let q = category ? category + " " : "";
+      q += `created:>${dateStr}`;
+      if (lang && lang !== "Any") q += ` language:${lang}`;
+
+      const res = await ghFetch(
+        `${GH}/search/repositories?q=${encodeURIComponent(q)}&sort=${sort}&order=desc&per_page=${perPage}&page=${page}`
+      );
+      if (!res.ok) return NextResponse.json({ items: [], total_count: 0 });
+      const data = await res.json();
+      return NextResponse.json(data);
+    }
+
+    // ── DEVELOPER SPOTLIGHT ──
+    if (action === "developer") {
+      const lang = searchParams.get("lang") || "";
       const daysAgo = parseInt(searchParams.get("days") || "30");
       const date = new Date();
       date.setDate(date.getDate() - daysAgo);
       const dateStr = date.toISOString().split("T")[0];
 
+      let q = `created:>${dateStr} stars:>50`;
+      if (lang && lang !== "Any") q += ` language:${lang}`;
+
       const res = await ghFetch(
-        `${GH}/search/repositories?q=${encodeURIComponent(category + ` created:>${dateStr}`)}&sort=stars&order=desc&per_page=9`
+        `${GH}/search/repositories?q=${encodeURIComponent(q)}&sort=stars&order=desc&per_page=20`
       );
       if (!res.ok) return NextResponse.json({ items: [] });
       const data = await res.json();
-      return NextResponse.json(data);
+
+      // Extract unique developers with their top repo
+      const seen = new Set<string>();
+      const devRepos: Array<{ login: string; avatar_url: string; repo: typeof data.items[0] }> = [];
+      for (const item of data.items || []) {
+        if (!seen.has(item.owner.login)) {
+          seen.add(item.owner.login);
+          devRepos.push({
+            login: item.owner.login,
+            avatar_url: item.owner.avatar_url,
+            repo: item,
+          });
+        }
+        if (devRepos.length >= 10) break;
+      }
+      return NextResponse.json({ developers: devRepos });
     }
 
     // ── RATE LIMIT CHECK ──

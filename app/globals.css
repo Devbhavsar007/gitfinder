@@ -112,3 +112,167 @@ select option {
   background: rgba(56, 189, 248, 0.15) !important;
   color: #38bdf8 !important;
 }
+
+/* ── Trending Stats Bar ── */
+.trending-stats-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  padding: 14px 20px;
+  margin-bottom: 20px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, rgba(15, 17, 23, 0.9), rgba(22, 26, 36, 0.9));
+  border: 1px solid var(--bd);
+  backdrop-filter: blur(8px);
+  animation: fadeUp 0.5s both;
+}
+
+.trending-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 0 20px;
+  min-width: 100px;
+}
+
+.trending-stat-value {
+  font-family: 'DM Mono', monospace;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--tx);
+  letter-spacing: -0.5px;
+}
+
+.trending-stat-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--mt);
+  font-weight: 500;
+}
+
+.trending-stat-divider {
+  width: 1px;
+  height: 28px;
+  background: var(--bd);
+  flex-shrink: 0;
+}
+
+/* ── Rank Badge ── */
+.trending-rank-badge {
+  position: absolute;
+  top: -6px;
+  left: -6px;
+  z-index: 10;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  border-radius: 8px;
+  background: var(--s1);
+  border: 1.5px solid var(--bd);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  animation: rankPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.trending-rank-badge[data-rank="1"] {
+  border-color: #f59e0b44;
+  background: linear-gradient(135deg, #f59e0b15, #f59e0b08);
+}
+
+.trending-rank-badge[data-rank="2"] {
+  border-color: #94a3b844;
+  background: linear-gradient(135deg, #94a3b815, #94a3b808);
+}
+
+.trending-rank-badge[data-rank="3"] {
+  border-color: #cd7f3244;
+  background: linear-gradient(135deg, #cd7f3215, #cd7f3208);
+}
+
+@keyframes rankPop {
+  0% { opacity: 0; transform: scale(0.5) rotate(-10deg); }
+  100% { opacity: 1; transform: scale(1) rotate(0); }
+}
+
+/* ── Bookmark Button ── */
+.trending-bookmark-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 10;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  border-radius: 8px;
+  background: rgba(15, 17, 23, 0.85);
+  border: 1px solid var(--bd);
+  cursor: pointer;
+  opacity: 0;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(4px);
+}
+
+.group:hover .trending-bookmark-btn,
+.trending-bookmark-btn:focus {
+  opacity: 1;
+}
+
+.trending-bookmark-btn:hover {
+  border-color: #f59e0b66;
+  color: #f59e0b !important;
+  background: rgba(245, 158, 11, 0.1);
+  transform: scale(1.1);
+}
+
+/* ── Pulse animation for live indicator ── */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.pulse-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #4ade80;
+  animation: pulse 2s ease-in-out infinite;
+  display: inline-block;
+}
+
+/* ── Responsive adjustments ── */
+@media (max-width: 640px) {
+  .trending-stats-bar {
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 12px 14px;
+  }
+
+  .trending-stat {
+    padding: 4px 12px;
+    min-width: 70px;
+  }
+
+  .trending-stat-value {
+    font-size: 14px;
+  }
+
+  .trending-stat-divider {
+    display: none;
+  }
+
+  .trending-rank-badge {
+    width: 24px;
+    height: 24px;
+    font-size: 12px;
+    top: -4px;
+    left: -4px;
+  }
+}

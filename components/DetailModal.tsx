@@ -27,7 +27,7 @@ export default function DetailModal({
         onClick={e => e.stopPropagation()}>
 
         {/* Close */}
-        <button onClick={onClose} className="absolute top-4 right-4 w-8 h-8 rounded-lg flex items-center justify-center text-sm transition-colors"
+        <button onClick={onClose} className="sticky top-4 float-right z-10 w-8 h-8 rounded-lg flex items-center justify-center text-sm transition-colors"
           style={{ background: "var(--s2)", border: "1px solid var(--bd)", color: "var(--mt2)" }}>
           ✕
         </button>
