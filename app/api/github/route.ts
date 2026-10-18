@@ -22,15 +22,44 @@ function setCache<T>(key: string, data: T) {
   cache.set(key, { data, timestamp: Date.now() });
 }
 
+function getValidToken(): string | null {
+  const token = process.env.GITHUB_TOKEN?.trim();
+  if (!token) return null;
+  // Ignore common placeholders or malformed tokens
+  if (
+    token === "ghp_your_token_here" ||
+    token.includes("your_token_here") ||
+    token === "undefined" ||
+    token === "null" ||
+    token.length < 10
+  ) {
+    return null;
+  }
+  return token;
+}
+
 // Server-side proxy — GITHUB_TOKEN never reaches the browser
-async function ghFetch(url: string) {
-  const token = process.env.GITHUB_TOKEN;
+async function ghFetch(url: string, retryWithoutAuth = true): Promise<Response> {
+  const token = getValidToken();
   const headers: Record<string, string> = {
     Accept: "application/vnd.github.mercy-preview+json",
     "User-Agent": "GitFinder/2.0",
   };
   if (token) headers["Authorization"] = `Bearer ${token}`;
-  return fetch(url, { headers, next: { revalidate: 120 } });
+
+  const res = await fetch(url, { headers, next: { revalidate: 120 } });
+
+  // If token is invalid or expired (401 Bad credentials), automatically retry without auth
+  if (res.status === 401 && token && retryWithoutAuth) {
+    console.warn("[GitFinder API] GITHUB_TOKEN was rejected by GitHub (401 Bad credentials). Retrying unauthenticated.");
+    const fallbackHeaders: Record<string, string> = {
+      Accept: "application/vnd.github.mercy-preview+json",
+      "User-Agent": "GitFinder/2.0",
+    };
+    return fetch(url, { headers: fallbackHeaders, next: { revalidate: 120 } });
+  }
+
+  return res;
 }
 
 export async function GET(req: NextRequest) {
@@ -205,9 +234,10 @@ export async function GET(req: NextRequest) {
     // ── RATE LIMIT CHECK ──
     if (action === "status") {
       const res = await ghFetch(`${GH}/rate_limit`);
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
+      const token = getValidToken();
       return NextResponse.json({
-        authenticated: !!process.env.GITHUB_TOKEN,
+        authenticated: !!token && res.status !== 401,
         remaining: data.resources?.search?.remaining ?? 0,
         limit: data.resources?.search?.limit ?? 10,
         reset: data.resources?.search?.reset ?? 0,
