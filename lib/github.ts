@@ -29,6 +29,9 @@ export interface SearchResult {
 export interface TrendingResult {
   total_count: number;
   items: Repo[];
+  rate_limited?: boolean;
+  cached?: boolean;
+  error?: string;
 }
 
 export interface DeveloperSpotlight {
@@ -69,7 +72,13 @@ export async function fetchTrending(opts: {
   });
   const res = await fetch(`${API}?${params}`);
   const data = await res.json();
-  return { total_count: data.total_count || 0, items: data.items || [] };
+  return {
+    total_count: data.total_count || 0,
+    items: data.items || [],
+    rate_limited: data.rate_limited,
+    cached: data.cached,
+    error: data.error,
+  };
 }
 
 export async function fetchDeveloperSpotlight(opts: {
@@ -204,17 +213,17 @@ export const LANGS = [
 
 export const TRENDING_CATEGORIES = [
   { label: "All", query: "", icon: "🔥" },
-  { label: "AI / ML", query: "machine learning artificial intelligence", icon: "🤖" },
-  { label: "LLM Apps", query: "llm langchain openai chatgpt agent", icon: "🧠" },
-  { label: "Web3", query: "blockchain web3 solidity ethereum", icon: "⛓️" },
-  { label: "DevTools", query: "developer tools cli productivity dx", icon: "🛠️" },
-  { label: "Rust", query: "rust systems programming", icon: "🦀" },
-  { label: "SaaS", query: "saas open source self-hosted", icon: "☁️" },
-  { label: "Security", query: "security pentesting cybersecurity", icon: "🔐" },
-  { label: "Game Dev", query: "game engine gamedev 2d 3d", icon: "🎮" },
-  { label: "Mobile", query: "mobile app react-native flutter ios android", icon: "📱" },
-  { label: "Data Eng", query: "data engineering pipeline etl analytics", icon: "📊" },
-  { label: "Infra", query: "kubernetes docker infrastructure devops", icon: "🏗️" },
+  { label: "AI / ML", query: "machine-learning OR deep-learning", icon: "🤖" },
+  { label: "LLM Apps", query: "llm OR openai OR chatgpt OR claude", icon: "🧠" },
+  { label: "Web3", query: "blockchain OR web3 OR solidity OR crypto", icon: "⛓️" },
+  { label: "DevTools", query: "devtools OR cli", icon: "🛠️" },
+  { label: "Rust", query: "language:rust", icon: "🦀" },
+  { label: "SaaS", query: "saas OR self-hosted", icon: "☁️" },
+  { label: "Security", query: "security OR cybersecurity OR pentest", icon: "🔐" },
+  { label: "Game Dev", query: "gamedev OR \"game engine\"", icon: "🎮" },
+  { label: "Mobile", query: "flutter OR \"react native\" OR ios OR android", icon: "📱" },
+  { label: "Data Eng", query: "etl OR kafka OR pipeline", icon: "📊" },
+  { label: "Infra", query: "kubernetes OR docker OR terraform OR devops", icon: "🏗️" },
 ];
 
 export const TIME_RANGES = [

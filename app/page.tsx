@@ -32,7 +32,11 @@ export default function Home() {
 
   const handleMidpoint = () => {
     if (pendingTabRef.current) {
-      setTab(pendingTabRef.current);
+      const nextTab = pendingTabRef.current;
+      setTab(nextTab);
+      if (nextTab === "trending" && trendResults.length === 0) {
+        loadTrending();
+      }
       pendingTabRef.current = null;
     }
   };
@@ -62,6 +66,7 @@ export default function Home() {
   const [trendTotal, setTrendTotal] = useState(0);
   const [trendPage, setTrendPage] = useState(1);
   const [trendLoading, setTrendLoading] = useState(false);
+  const [trendRateLimited, setTrendRateLimited] = useState(false);
   const [trendView, setTrendView] = useState<TrendingView>("repos");
   const [showTrendLangDrop, setShowTrendLangDrop] = useState(false);
   const [showTrendSortDrop, setShowTrendSortDrop] = useState(false);
@@ -158,13 +163,17 @@ export default function Home() {
         page: p,
       });
 
+      setTrendRateLimited(!!data.rate_limited);
+
       if (append) {
         setTrendResults(prev => [...prev, ...(data.items || [])]);
       } else {
         setTrendResults(data.items || []);
       }
-      setTrendTotal(data.total_count || 0);
+      setTrendTotal(data.total_count || (data.items?.length ?? 0));
       setTrendPage(p);
+    } catch {
+      setTrendRateLimited(true);
     } finally {
       setTrendLoading(false);
     }
@@ -521,6 +530,21 @@ export default function Home() {
             </p>
           </div>
 
+          {/* Rate limited indicator */}
+          {trendRateLimited && (
+            <div data-no-trail="" className="mx-auto max-w-xl mb-4 px-4 py-2.5 rounded-xl text-xs flex items-center justify-between gap-3"
+              style={{ background: "#f59e0b15", border: "1px solid #f59e0b44", color: "#f59e0b" }}>
+              <div className="flex items-center gap-2">
+                <span>⚡</span>
+                <span>GitHub API rate limit reached (10 req/min). Showing verified cached trending projects.</span>
+              </div>
+              <button onClick={() => loadTrending()} className="px-2.5 py-1 rounded-md text-xs font-bold transition-all"
+                style={{ background: "#f59e0b33", color: "#f59e0b" }}>
+                Retry 🔄
+              </button>
+            </div>
+          )}
+
           {/* ── Stats Bar ── */}
           {!trendLoading && trendResults.length > 0 && (
             <div data-no-trail="" className="trending-stats-bar">
@@ -765,8 +789,26 @@ export default function Home() {
               ) : (
                 <div className="text-center py-16">
                   <div className="text-5xl mb-4">📭</div>
-                  <h2 className="text-lg font-bold mb-2">No trending repos found</h2>
-                  <p className="text-sm" style={{ color: "var(--mt2)" }}>Try a different time range, category, or language</p>
+                  <h2 className="text-lg font-bold mb-2">No trending repos found for this filter</h2>
+                  <p className="text-sm mb-4" style={{ color: "var(--mt2)" }}>Try resetting filters to discover all trending projects</p>
+                  <button
+                    onClick={() => {
+                      setTrendCat(TRENDING_CATEGORIES[0]);
+                      setTrendTimeRange(TIME_RANGES[1]);
+                      setTrendSort(SORT_OPTIONS[0]);
+                      setTrendLang("Any");
+                      loadTrending({
+                        cat: TRENDING_CATEGORIES[0],
+                        time: TIME_RANGES[1],
+                        sort: SORT_OPTIONS[0],
+                        lang: "Any",
+                      });
+                    }}
+                    className="px-5 py-2.5 rounded-xl text-xs font-bold transition-all"
+                    style={{ background: "linear-gradient(135deg,#f59e0b,#f97316)", color: "#000" }}
+                  >
+                    Reset to All Trending 🔥
+                  </button>
                 </div>
               )}
             </>
